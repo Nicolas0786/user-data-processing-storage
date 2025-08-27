@@ -3,9 +3,9 @@ package com.example.userdataprocessingstorage.enums;
 public enum FileType {
     CSV, JSON, XML;
 
-    public static FileType from(String s) {
-        if (s == null) throw new IllegalArgumentException("Type ausente");
-        return FileType.valueOf(s.trim().toLowerCase());
+    public static FileType exists(String type) {
+        if (type == null) throw new IllegalArgumentException("Type ausente");
+        return FileType.valueOf(type.trim().toUpperCase());
     }
 
 }
