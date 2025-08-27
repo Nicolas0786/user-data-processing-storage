@@ -2,8 +2,10 @@ package com.example.userdataprocessingstorage.controller;
 
 import com.example.userdataprocessingstorage.enums.FileType;
 import com.example.userdataprocessingstorage.service.UserFileService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +24,9 @@ public class UserFileController {
     private final UserFileService userFileService;
 
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(tags = "User File", summary = "Upload de aquivos de usuários",
+            description = "Aceita arquivos no formato CSV, JSON ou XML contendo {name, email}.")
     public ResponseEntity<?> upload(@RequestParam("type") String type, @RequestParam("file") MultipartFile multipartFile) throws Exception {
 
         FileType fileType;
