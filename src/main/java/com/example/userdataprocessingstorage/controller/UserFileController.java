@@ -3,6 +3,9 @@ package com.example.userdataprocessingstorage.controller;
 import com.example.userdataprocessingstorage.enums.FileType;
 import com.example.userdataprocessingstorage.service.UserFileService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -27,7 +30,13 @@ public class UserFileController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(tags = "User File", summary = "Upload de aquivos de usuários",
             description = "Aceita arquivos no formato CSV, JSON ou XML contendo {name, email}.")
-    public ResponseEntity<?> upload(@RequestParam("type") String type, @RequestParam("file") MultipartFile multipartFile) throws Exception {
+    public ResponseEntity<?> upload(
+            @Parameter(name = "type", description = "Tipo do arquivo CSV, JSON ou XML", required = true, example = "json")
+            @RequestParam("type") String type,
+            @Parameter(name = "file", description = "Arquivo a ser enviado", required = true,
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                    schema = @Schema(type = "string", format = "binary")))
+            @RequestParam("file") MultipartFile multipartFile) throws Exception {
 
         FileType fileType;
 

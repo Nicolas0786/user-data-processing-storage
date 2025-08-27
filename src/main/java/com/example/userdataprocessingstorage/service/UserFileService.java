@@ -39,8 +39,12 @@ public class UserFileService {
     @Transactional
     public int processUpload(MultipartFile multipartFile, FileType fileType) throws Exception {
         if (multipartFile == null || multipartFile.isEmpty()) throw new ValidationException("Arquivo vazio");
+
         UserFileParser userFileParser = userFileParserMap.get(fileType);
         if (userFileParser == null) throw new IllegalArgumentException("Tipo não suportado: " + fileType);
+
+        String nomeArquivo = multipartFile.getOriginalFilename();
+        if (nomeArquivo != null && !nomeArquivo.toUpperCase().endsWith(fileType.name())) throw new ValidationException("O tipo do arquivo não condiz com oque foi passado.");
 
         List<UserInput> userInputs = userFileParser.parse(multipartFile.getInputStream());
 
@@ -61,6 +65,7 @@ public class UserFileService {
         this.repository.saveAll(toSave);
         return toSave.size();
     }
+
 
     private void validate(UserInput userInput) {
         if (userInput == null) throw new ValidationException("Registro invalido");
