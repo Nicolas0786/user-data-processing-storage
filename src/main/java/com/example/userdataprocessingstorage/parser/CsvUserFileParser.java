@@ -41,12 +41,10 @@ public class CsvUserFileParser implements UserFileParser{
                 try {
                     name = record.get("name");
                     email = record.get("email");
-                } catch (Exception e) {
-
+                } catch (IllegalArgumentException e) {
+                    if (record.size() >= 1) name = record.get(0);
+                    if (record.size() >= 2) email = record.get(1);
                 }
-
-                if (name == null && record.size() >= 1) name = record.get(0);
-                if (email == null && record.size() >= 2) email = record.get(1);
 
                 if ((name == null || name.isBlank()) && (email == null || email.isBlank())) continue;
                 out.add(new UserInput(name, email));

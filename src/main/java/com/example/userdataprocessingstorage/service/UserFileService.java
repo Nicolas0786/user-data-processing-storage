@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -45,8 +46,7 @@ public class UserFileService {
 
         if (userInputs == null || userInputs.isEmpty()) throw new ValidationException("Nenhum registro valido encontrado.");
 
-        int count = 0;
-
+        List<User> toSave = new ArrayList<>();
         for (UserInput userInput: userInputs) {
 
             this.validate(userInput);
@@ -55,19 +55,18 @@ public class UserFileService {
             user.setName(userInput.getName());
             user.setEmail(userInput.getEmail());
             user.setSource(fileType.name());
-            this.repository.save(user);
-            count ++;
+            toSave.add(user);
 
         }
-        return count;
-
+        this.repository.saveAll(toSave);
+        return toSave.size();
     }
 
     private void validate(UserInput userInput) {
         if (userInput == null) throw new ValidationException("Registro invalido");
         if (userInput.getName() == null || userInput.getName().isBlank()) throw new ValidationException("Name obrigatorio.");
         if (userInput.getEmail() == null || userInput.getEmail().isBlank()) throw new ValidationException("Email obrigatorio.");
-        if (userInput.getEmail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) throw new ValidationException("Email inválido: " + userInput.getEmail());
+        if (!userInput.getEmail().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) throw new ValidationException("Email inválido: " + userInput.getEmail());
     }
 
     @Transactional(readOnly = true)
@@ -78,16 +77,15 @@ public class UserFileService {
             case "json" -> ResponseEntity.ok(new UsersResponse(users));
             case "xml" -> ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(new UsersResponse(users));
             case "csv" -> this.toCsvResponse(users);
-            default -> ResponseEntity.badRequest().body(Map.of("Error", ""));
+            default -> throw  new ValidationException("Este formato é inválido: use JSON, XML ou CSV");
         };
-
 
     }
 
     private ResponseEntity<byte[]> toCsvResponse(List<User> users) throws IOException {
         StringWriter writer = new StringWriter();
 
-        try (var printer = new CSVPrinter(writer, CSVFormat.DEFAULT.builder()
+        try (CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT.builder()
                 .setHeader("id", "name", "email", "source").build())) {
             for (User user: users) {
                 printer.printRecord(user.getId(), user.getName(), user.getEmail(), user.getSource());
@@ -96,7 +94,7 @@ public class UserFileService {
         byte[] bytes = writer.toString().getBytes(StandardCharsets.UTF_8);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"users.csv\"")
-                .contentType(MediaType.TEXT_PLAIN)
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .body(bytes);
     }
 
