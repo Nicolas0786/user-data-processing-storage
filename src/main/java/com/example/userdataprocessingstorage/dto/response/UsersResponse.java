@@ -1,4 +1,4 @@
-package com.example.userdataprocessingstorage.model;
+package com.example.userdataprocessingstorage.dto.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -19,6 +19,6 @@ public class UsersResponse {
 
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "user")
-    private List<User> users;
+    private List<UserOutput> users;
 
 }

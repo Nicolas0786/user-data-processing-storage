@@ -1,8 +1,9 @@
 package com.example.userdataprocessingstorage.parser;
 
 import com.example.userdataprocessingstorage.enums.FileType;
-import com.example.userdataprocessingstorage.model.UserInput;
+import com.example.userdataprocessingstorage.dto.request.UserInput;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,8 @@ import java.util.List;
 @Component
 public class JsonUserFileParser implements UserFileParser {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
     @Override
     public FileType fileSupports() {

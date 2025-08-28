@@ -1,13 +1,9 @@
 package com.example.userdataprocessingstorage.parser;
 
+import com.example.userdataprocessingstorage.dto.request.UserInput;
+import com.example.userdataprocessingstorage.dto.xml.UsersXml;
 import com.example.userdataprocessingstorage.enums.FileType;
-import com.example.userdataprocessingstorage.model.UserInput;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 import java.io.InputStream;
@@ -29,13 +25,4 @@ public class XmlUserFileParser implements UserFileParser {
         return wrapper.getUsers();
     }
 
-    //Todo não esquecer de mover para um pacote....
-    @Getter
-    @Setter
-    @JacksonXmlRootElement(localName = "users")
-    public static class UsersXml {
-        @JacksonXmlElementWrapper(useWrapping = false)
-        @JacksonXmlProperty(localName = "user")
-        private List<UserInput> users;
-    }
 }

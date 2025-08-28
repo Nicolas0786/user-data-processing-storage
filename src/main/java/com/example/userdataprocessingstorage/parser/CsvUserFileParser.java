@@ -1,7 +1,7 @@
 package com.example.userdataprocessingstorage.parser;
 
 import com.example.userdataprocessingstorage.enums.FileType;
-import com.example.userdataprocessingstorage.model.UserInput;
+import com.example.userdataprocessingstorage.dto.request.UserInput;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Component;
