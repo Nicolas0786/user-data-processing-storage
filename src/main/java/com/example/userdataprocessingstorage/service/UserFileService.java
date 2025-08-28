@@ -79,21 +79,17 @@ public class UserFileService {
     @Transactional(readOnly = true)
     public ResponseEntity<?> findFileByFormat(String format)  {
         List<User> users = this.repository.findAll();
-
         List<UserOutput> userOutputs = users.stream().map(UserOutput::toOutput).toList();
-
         return switch (format.toLowerCase()) {
             case "json" -> ResponseEntity.ok(new UsersResponse(userOutputs));
             case "xml" -> ResponseEntity.ok().contentType(MediaType.APPLICATION_XML).body(new UsersResponse(userOutputs));
             case "csv" -> this.toCsvResponse(userOutputs);
             default -> throw  new ValidationException("Este formato é inválido: use JSON, XML ou CSV");
         };
-
     }
 
     private ResponseEntity<byte[]> toCsvResponse(List<UserOutput> userOutputs) {
         StringWriter writer = new StringWriter();
-
         try (CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT.builder()
                 .setHeader("id", "name", "email", "source").build())) {
             for (UserOutput userOutput: userOutputs) {
